@@ -1,9 +1,34 @@
-let connection = require('../config/connection.js');
-function printQuestionMarks(num) {
-    let arr = [];
+//Import (require) connection.js into orm.js
+var connection = require('../config/connection.js')
 
-    for (let i=0; i<num; i++){
-        arr.push('?');
-    }
-    return arr.toString();
+var orm = {
+	selectAll: function(callback) {
+		connection.query('SELECT * FROM burgers', function(err, result)
+		{
+		if (err) throw err;
+		callback(result);
+	});
+},
+
+	insertOne: function(burger_name, callback) {
+		connection.query('INSERT INTO burgers SET ?', {
+			burger_name: burger_name,
+			devoured: false,
+		}, function(err, result) {
+			if (err) throw err;
+			callback(result);
+		});		
+	},
+
+	//updateOne()
+	updateOne: function(burgerID, callback) {
+		connection.query('UPDATE burgers SET ? WHERE ?', [{devoured: true}, {id: burgerID}],
+			function(err, result) {
+			if (err) throw err;
+			callback(result);
+		});
+	}
 };
+
+// Export the ORM object in module.exports.
+module.exports = orm;
